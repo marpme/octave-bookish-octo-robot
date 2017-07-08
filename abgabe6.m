@@ -77,49 +77,89 @@ plotDifferential(x, y, true, "e) l(x) = x * ln(x) - differentiale");
 
 
 ###################################
-##          AUFGABE (2)          ##
+##          AUFGABE (2/3)        ##
 ###################################
 
-function integrate(func, x, name)
-  flaeche = quad(func, x(1), x(2));
-  printf(name, flaeche);
+function I = mcintgr(fun, a, b, mcloops) 
+ if ( nargin != 4 | nargout> 1 ) 
+   usage("mcintgr is called with 4 inputs and 1 output");
+ endif
+
+ if !exist(fun) 
+   usage("mcintgr: Sure about the function name?");
+ elseif ( length(feval(fun,a)) != 1 ) 
+   usage("Function passed to mcintgr must be a scalar function"); 
+ endif
+
+ x = linspace(a,b);
+ y = feval(fun,x); 
+ if ( min(y) < 0 ) 
+  I = "keine negativen Integrale...";
+  return;
+ endif 
+ maxy = max(y);
+ l = b - a;  
+
+ counter = 0; 
+ nloops = 0; 
+
+ while ( nloops<= mcloops )
+  r1 = a + l*rand; 
+  r2 = maxy*rand;
+  fr1 = feval(fun,r1);
+  if ( r2<fr1 ) 
+   counter++;
+  endif
+  nloops++; 
+ endwhile
+ 
+ I = counter/mcloops*maxy*l;
 endfunction
 
-integrate("sin", [ 0 pi ], "1) sin(x) von 0 bis pi integriert ergibt: %d \n");
+function integrate(func, x, name)
+  s = quad(func, x(1), x(2));
+  xVec = [x(1):0.01:x(2)];
+  y = feval(func, xVec);
+  t = trapz(xVec, y);
+  m = mcintgr(func, x(1), x(2), 100);
+  printf(name, s, t, m);
+endfunction
 
-integrate("cos", [ 0 pi/2 ], "2) cos(x) von 0 bis pi/2 integriert ergibt: %d \n");
+integrate("sin", [ 0 pi ], "1) sin(x) von 0 bis pi integriert ergibt: \n quad=%d \n trapz=%d \n monteCarlo=%d \n");
+
+integrate("cos", [ 0 pi/2 ], "2) cos(x) von 0 bis pi/2 integriert ergibt: \n quad=%d \n trapz=%d \n monteCarlo=%d \n");
 
 function y = drei(x)
   y = sqrt( 1 .+ exp(0.5 .* x.^2));
 endfunction
 
-integrate("drei", [ 1 2.6 ], "3) sqrt(1 + exp(0.5x^2)) von 1 bis 2,6 integriert ergibt: %d \n");
+integrate("drei", [ 1 2.6 ], "3) sqrt(1 + exp(0.5x^2)) von 1 bis 2,6 integriert ergibt: \n quad=%d \n trapz=%d \n monteCarlo=%d \n");
 
-integrate("tan", [ -1 0 ], "4) tan(x) von -1 bis 0 integriert ergibt: %d \n");
+integrate("tan", [ -1 0 ], "4) tan(x) von -1 bis 0 integriert ergibt: \n quad=%d \n trapz=%d \n monteCarlo=%s \n");
 
 function y = fuenf(x)
   y = ( 1 .- exp(-x)) ./ x;
 endfunction
 
-integrate("fuenf", [ 1 2 ], "5) 1-exp(-x))/x von 1 bis 2 integriert ergibt: %d \n");
+integrate("fuenf", [ 1 2 ], "5) 1-exp(-x))/x von 1 bis 2 integriert ergibt: \n quad=%d \n trapz=%d \n monteCarlo=%d \n");
 
 function y = sechs(x)
   y = sqrt( 1 .+ 2 .* x .^ 4);
 endfunction
 
-integrate("sechs", [ 1 4 ], "6) sqrt(1+2*x^4) von 1 bis 4 integriert ergibt: %d \n");
+integrate("sechs", [ 1 4 ], "6) sqrt(1+2*x^4) von 1 bis 4 integriert ergibt: \n quad=%d \n trapz=%d \n monteCarlo=%d \n");
 
 function y = sieben(x)
   y = x.^3 ./ ( exp(x) .- 1 );
 endfunction
 
-integrate("sieben", [ 0.5 1 ], "7) x^3 / (e^x-1) von 0.5 bis 1 integriert ergibt: %d \n");
+integrate("sieben", [ 0.5 1 ], "7) x^3 / (e^x-1) von 0.5 bis 1 integriert ergibt: \n quad=%d \n trapz=%d \n monteCarlo=%d \n");
 
 function y = acht(x)
   y = (exp(x)) ./ (x.^2);
 endfunction
 
-integrate("acht", [ 1 3 ], "8) e^x/x^2 von 1 bis 3 integriert ergibt: %d \n");
+integrate("acht", [ 1 3 ], "8) e^x/x^2 von 1 bis 3 integriert ergibt: \n quad=%d \n trapz=%d \n monteCarlo=%d \n");
 
 
 
