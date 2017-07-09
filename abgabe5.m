@@ -3,9 +3,8 @@ clear;
 format long g;
 more off;
 
-function y = a(x) 
-  y = (x - 9)^2;
-endfunction
+a = @(x) (x .- 9) .^ 2;
+
 
 function ans = dichtef(k)
   ans = 1/243 .* ((k.^3)/3.-9.*k.^2.+81.*k);
@@ -37,14 +36,20 @@ grid
 ## Standardabweichung der Zeitdauer X. 
 global erwartung;
 disp("Aufgabe 1) \n")
-printf("a) C ist 1/%d ", quad("a", 0, 9));
 erwartung = quad("erwartungf", 0, 9);
-printf("Erwartungswert der %d", quad("erwartungf", 0, 9));
-varianz = quad("varianzf", 0, 9)
-standard_abw = sqrt(varianz)
+varianz = quad("varianzf", 0, 9);
+standard_abw = sqrt(varianz);
+erwartungswert_rechnung = erwartung * 80 + 30;
+standard_abw_rechnung = standard_abw * 80;
 
-erwartungswert_rechnung = erwartung * 80 + 30
-standard_abw_rechnung = standard_abw * 80
+printf("C                       = 1/%d \n", quad("a", 0, 9));
+printf("Erwartungswert          = %d \n", erwartung);
+printf("Varianz                 = %d \n", varianz);
+printf("Standardabweichung      = %d \n", standard_abw);
+printf("Erwartungswert Rech     = %d€ \n", erwartungswert_rechnung);
+printf("Stand. Abweichung Rech  = %d€ \n", standard_abw_rechnung);
+
+
 
 ## Aufgabe 2
 ## Die Feuerwehr einer Stadt wird ca. aller 2 Tage zum Löschen eines Brandes eingesetzt. 
@@ -53,7 +58,8 @@ standard_abw_rechnung = standard_abw * 80
 ## alle 2 tage => 7(Tage/Woche) / 2 => 3.5 Einsätze pro Woche
 ## possion f(x) = P(X = x) = mu^x/x! * e^(-mu)
 
-disp("\nAufgabe 2) \n")
+clear;
+disp("\nAufgabe 2) \n");
 
 x = [0:8];
 mu_einsatz = 3.5;
@@ -62,32 +68,33 @@ subplot(2,2,2)
 bar(x, poisson);
 title("2a) Wahrscheinlichkeitfunktion der Einsaetze");
 
-b=(1-poisscdf(2, mu_einsatz)) * 100;
-printf("a) Wahrscheinlichkeit für mehr als 2 Einsätze pro Woche ist: %d", b);
+b = 1 - poisscdf(2, mu_einsatz);
+printf("b) Wahrscheinlichkeit für mehr als 2 Einsätze pro Woche: "),printf("%d %% \n",b*100);
 
 global mu_zeit=2;
-
 zeiten=[0:7];
 c = 7;
+
 subplot(2,2,3)
 bar(zeiten, poisspdf(zeiten, mu_zeit));
+title("2c) Darstellung der Verteilungsfunktion");
 axis auto
 grid
 
 subplot(2,2,4)
 bar(zeiten, poisscdf(zeiten, mu_zeit));
-title('2c) Darstellung der Verteilungs und Dichtefunktion')
+title('2c)  Darstellung der Dichtefunktion')
 axis auto
 grid
 
 d=poisscdf(2, mu_zeit)*100;
-e=(1-poisscdf(5, mu_zeit))*100
+e=(1-poisscdf(4, mu_zeit))*100
 printf("d) Mit der Wahrscheinlichkeit von %d %% muss die Feuerwehr nach 2 Tage wieder ausrücken.\n", d);
-printf("e) Und mit der Wahrscheinlichekit von %d %% findet nach mind. 5 Tagen seit dem letzten Einsatz kein neuer mehr statt.\n", e);
+printf("e) Und mit der Wahrscheinlichekit von %d %% findet nach mind. 5 Tagen\n   seit dem letzten Einsatz kein neuer mehr statt.\n", e);
 
 ## Aufgabe 3
 ## Die Längenmessung von 10 Schrauben
-
+clear;
 printf('\nAufgabe 3)\n\n');
 messungen = [10 8 9 10 11 11 9 12 8 12];
 
@@ -106,6 +113,7 @@ gamma*100, mittelwert - interval, mittelwert + interval);
 # Aufgabe 4
 # Durchschnittlich 10000 mean
 # Standardabweichung 800 sigma
+clear;
 printf("\nAufgabe 4)\n\n");
 a = normcdf(8999, 10000, 800);
 printf("a) Die Wahrscheinlichkeit betraegt %d%%\n",a*100);
@@ -119,6 +127,7 @@ printf("d) 90%% der Lampen erreichen eine Lebensdauer von %d Stunden\n",d);
 # Aufgabe 5
 # Durchschnitt 40000
 # Standardabweichung 4310
+clear;
 printf("\n\nAufgabe 5)\n\n");
 a = normcdf(37500,40000,4310);
 printf("a) Die Wahrscheinlichkeit betraegt %d%%\n",a*100);
