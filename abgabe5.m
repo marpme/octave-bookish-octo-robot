@@ -42,7 +42,7 @@ standard_abw = sqrt(varianz);
 erwartungswert_rechnung = erwartung * 80 + 30;
 standard_abw_rechnung = standard_abw * 80;
 
-printf("C                       = 1/%d \n", quad("a", 0, 9));
+printf("C                       = 1/%d \n", quad(a, 0, 9));
 printf("Erwartungswert          = %d \n", erwartung);
 printf("Varianz                 = %d \n", varianz);
 printf("Standardabweichung      = %d \n", standard_abw);

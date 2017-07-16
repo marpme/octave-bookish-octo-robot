@@ -9,27 +9,29 @@ index = 1;
 ##          AUFGABE (1)          ##
 ###################################
 function y = plotDifferential(x, y, off, name)
-  global index; 
-  dyx = diff(y) ./ diff(x);   % Differenzenquotienten bilden
-  xr = x; 
-  xr(length(x)) = []; % letzte Koordinate entfernen
+  global index;
+  % erste ableitung der funktion
+  dyx_one = diff(y) ./ diff(x);   % Differenzenquotienten bilden
+  xr_one = x; 
+  xr_one(length(x)) = []; % letzte Koordinate entfernen
   
-  if(off == true)
-    subplot(2,3, index); 
-    hold on
-  endif
+  % zweite ableitung der funktion berechnen
+  dyx_two = diff(dyx_one) ./ diff(xr_one);   % Differenzenquotienten bilden
+  xr_two = xr_one; 
+  xr_two(length(xr_one)) = []; % letzte Koordinate entfernen
   
-  plot(xr,dyx); 
-  
-  if(off == false) 
-    hold off
-    title(name);
-    grid; 
-    axis auto;
-    index++;
-  else
-    plotDifferential(xr, dyx, false, name);
-  endif  
+  subplot(2,3, index); 
+  plot(x,y,xr_one,dyx_one, xr_two, dyx_two); 
+  xlabel('x');
+  ylabel('y');
+  hleg = legend([ "Ausgangsfunktion"; 
+           "1. Ableitung"; 
+           "2. Ableitung" ]);
+  title(name);
+  grid; 
+  axis auto;
+  index++;
+ 
 endfunction
 
 function y = f(x)
@@ -153,13 +155,13 @@ function y = sieben(x)
   y = x.^3 ./ ( exp(x) .- 1 );
 endfunction
 
-integrate("sieben", [ 0.5 1 ], "7) x^3 / (e^x-1) von 0.5 bis 1 integriert ergibt: \n quad=%d \n trapz=%d \n monteCarlo=%d \n");
+integrate("sieben", [ 0.5 1 ], "7) x^3 / (exp(x)-1) von 0.5 bis 1 integriert ergibt: \n quad=%d \n trapz=%d \n monteCarlo=%d \n");
 
 function y = acht(x)
   y = (exp(x)) ./ (x.^2);
 endfunction
 
-integrate("acht", [ 1 3 ], "8) e^x/x^2 von 1 bis 3 integriert ergibt: \n quad=%d \n trapz=%d \n monteCarlo=%d \n");
+integrate("acht", [ 1 3 ], "8) exp(x)/(x^2) von 1 bis 3 integriert ergibt: \n quad=%d \n trapz=%d \n monteCarlo=%d \n");
 
 
 
