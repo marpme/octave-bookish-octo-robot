@@ -3,9 +3,9 @@ clc;
 more off;
 
 function [ Child1, Child2, Child1_Code, Child2_Code, current_children_count ] = fanoEncoding(P, Code, Current_No_of_Children)
-  bitList = {};
   len = length(P);
   
+  % wenn nur noch zwei items da sind sie immer in 0 und 1 zu teilen!
   if (len <= 2)
     Child1 = P(1);
     Child2 = P(2);
@@ -20,10 +20,9 @@ function [ Child1, Child2, Child1_Code, Child2_Code, current_children_count ] = 
   
   
   ## loop durch jedes Zeichen (jedes muss encoded werden!)
-  old_sum_diff = 1000;
+  old_sum_diff = 1000; % wähle eine Hohe Zahl um mit der den Differenz vergleich zu beginnen
   Child1 = [];
   Child2 = [];
-  differenz = [];
   
   for i = [1:len-1]
     new_sum_diff = abs(sum(P(1:i)) - sum(P(i+1:len)));
@@ -41,8 +40,8 @@ function [ Child1, Child2, Child1_Code, Child2_Code, current_children_count ] = 
     old_sum_diff = new_sum_diff;
   endfor
   
+  # erhöhe die Children count da wir 2 neu code werde angehangen haben
   current_children_count = Current_No_of_Children + 2;
-  
 endfunction
 
 ##
@@ -69,6 +68,7 @@ function Dict = ShannonFano_Dict( P )
   max_iter = (2 * Total_No_of_Children) - 2;
   for i = 1:max_iter
       if (i <= Current_No_of_Children)
+       # referenzierung von Child_1, Child_2 geht leider nur so ... :( 
        eval(sprintf('if (size(Child_%i,2) > 1), j = Current_No_of_Children + 1; k = Current_No_of_Children + 2;end',i));
        eval(sprintf('if (size(Child_%i,2) > 1),[Child_%i,Child_%i,Code_%i,Code_%i,Current_No_of_Children] = GetChildren(Child_%i,Code_%i,Current_No_of_Children);end',i,j,k,j,k,i,i));
        eval(sprintf('if (size(Child_%i,2) == 1),SymbolMatrix(size(CodeMatrix,1) + 1,1) = Child_%i; CodeMatrix{size(CodeMatrix,1) + 1,1} = Code_%i;end',i,i,i));
