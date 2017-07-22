@@ -1,7 +1,14 @@
 clc;
 clear;
 more off;
+## benoetigt für das Fano Encoding :( 
 pkg load communications;
+
+##
+## Abgabe 8
+## Jan Kulose und Marvin Piekarek
+## s0557320 / s0556014
+##
 
 disp('');
 disp('Aufgabe 1');
@@ -38,8 +45,8 @@ for i = 1:length(PX)
   Xn(i) = length(hd{1,i}); 
 end
 
-EvonN = sum(entropy(PX, Xn)) % = 2.8400
-EntropyOptimum = -sum(entropy2(PX)) % = 2.3933 optimales Ergebnis
+EvonN = sum(EntropyDerZeichen(PX, Xn)) % = 2.8400
+EntropyOptimum = -sum(EntropyZurBasis2(PX)) % = 2.3933 optimales Ergebnis
 RealeEffektivitaet = EntropyOptimum/EvonN % = 0.84266 
 % - weit weg druch schlechte kodierung von octave.
 
@@ -48,36 +55,45 @@ disp('Aufgabe 3')
 disp('')
 clear;
 
-PvonX = [0.1 0.2 0.3 0.4];
+PX = [0.1 0.2 0.3 0.4];
 
+% UebertragungsMat P(Y|X) = P(XundY) / P(X)
 UebertragungsMat = [ 0.5 0.0  0.5 ; 
                      0.2 0.4  0.4 ; 
                      0.5 0.25 0.25; 
                      0.0 0.5  0.5];
-VXY = PvonX(:) .* UebertragungsMat(:,:); 
+
     
-disp('a)')
-PY = sum(VXY)
+disp('a)')                     
+% Multiplikationssatz
+% P(Y) = P(Y|X) .* P(X)   
+PY = (UebertragungsMat' * PX')'
 
 disp('b)')
-VXY
+% Definition Bedingte Wahrscheinlichkeit
+% P(Y|X) = P(XundY) / P(X) umstellen nach P(XundY)
+% P(XundY) = P(Y|X) * P(X)
+Verteilung_XY = (UebertragungsMat' .* PX)'
 printf(
-  "Verteilungsmatrix Summe müsste demnach 1 sein: sum(sum(VXY)) = %d \n", 
-  sum(sum(VXY))
+  "Verteilungsmatrix Summe muesste demnach 1 sein: sum(sum(VXY)) = %d \n", 
+  sum(sum(Verteilung_XY))
 );
 
 disp('c)')
-QzS = VXY(:,:)./PY(:)';
-Q = QzS'/10
+% Multiplikationssatz + Mengen kann man austauschen - Bayes
+% P(YundX) = P(Y) * P(X|Y) - nach P(X|Y) umstellen
+% Q = P(X|Y) =  P(YundX) / P(Y) = P(XundY) / P(Y)
+Q = (Verteilung_XY(:,:)./PY(:)')'
+
 
 disp('d)')
-X = -sum(entropy2(PvonX))
+X = -sum(EntropyZurBasis2(PX))
 for i = 1:length(Q(:,1))
   % 0^0 = 1 und daher, dass log2(1)==0 
-  % können wir annehmen, dass log2(Q.^Q) = Q.*log2(Q) ist.
+  % koennen wir annehmen, dass log2(Q.^Q) = Q.*log2(Q) ist.
   XY(i) = - sum(log2(Q(i,:) .^ Q(i,:)));
 end
-XY = sum(XY.*PvonX(1:3))
+XY = sum(XY.*PX(1:3))
 IvonXY = X - XY
 
 
@@ -86,7 +102,7 @@ disp('Aufgabe 4')
 disp('')
 clear;
 
-PvonX = [0.30 0.28 0.12 0.12 0.10 0.08];
+PX = [0.30 0.28 0.12 0.12 0.10 0.08];
 
 UebertragungsMat = [ 0.60 0.35 0.03 0.02 0 0; 
         0.10 0.45 0.20 0.15 0.10 0;
@@ -95,32 +111,36 @@ UebertragungsMat = [ 0.60 0.35 0.03 0.02 0 0;
         0 0 0.07 0.18 0.55 0.20; 
         0 0 0.08 0.12 0.25 0.55];
 
-VXY = PvonX(:) .* UebertragungsMat(:,:);
-
 disp('a)')
-PY = sum(VXY)
+% Multiplikationssatz
+% P(Y) = P(Y|X) .* P(X)   
+PY = (UebertragungsMat' * PX')'
 
 disp('b)')
-VXY
+% Definition Bedingte Wahrscheinlichkeit
+% P(Y|X) = P(XundY) / P(X) umstellen nach P(XundY)
+% P(XundY) = P(Y|X) * P(X)
+Verteilung_XY = (UebertragungsMat' .* PX)'
 printf(
-  "Verteilungsmatrix Summe müsste demnach 1 sein: sum(sum(VXY)) = %d \n", 
-  sum(sum(VXY))
+  "Verteilungsmatrix Summe muesste demnach 1 sein: sum(sum(VXY)) = %d \n", 
+  sum(sum(Verteilung_XY))
 );
 
 disp('c)')
-QzS = VXY(:,:)./PY(:)';
-Q = QzS'/10
-
+% Multiplikationssatz + Mengen kann man austauschen - Bayes
+% P(YundX) = P(Y) * P(X|Y) - nach P(X|Y) umstellen
+% Q = P(X|Y) =  P(YundX) / P(Y) = P(XundY) / P(Y)
+Q = (Verteilung_XY(:,:)./PY(:)')'
 
 disp('d)')
-X = -sum(entropy2(PvonX))
+EX = -sum(EntropyZurBasis2(PX))
 for i = 1:length(Q(:,1))
   % 0^0 = 1 und daher, dass log2(1)==0 
-  % können wir annehmen, dass log2(Q.^Q) = Q.*log2(Q) ist.
-  XY(i) = - sum(log2(Q(i,:) .^ Q(i,:)));
+  % koennen wir annehmen, dass log2(Q.^Q) = Q.*log2(Q) ist.
+  EXY(i) = - sum(log2(Q(i,:) .^ Q(i,:)));
 end
-XY = sum(XY(:).*PvonX(:))
-IvonXY = X - XY
+EXY = sum(EXY(:).*PX(:))
+IvonXY = EX - EXY
 
 disp('')
 disp('Aufgabe 5')
@@ -128,7 +148,7 @@ disp('')
 disp('a) Linear: Einfache Fehler Erkennung')
 clear;
 
-# Unsere definierte Prüfmatrix
+# Unsere definierte Pruefmatrix
 H = [0, 0, 0, 1, 1, 1, 1;
      0, 1, 1, 0, 0, 1, 1;
      1, 0, 1, 0, 1, 0, 1];
@@ -139,9 +159,9 @@ G = [1, 1, 1, 0, 0, 0, 0;
      0, 1, 0, 1, 0, 1, 0;
      1, 1, 0, 1, 0, 0, 1];
 
-a = [1 0 1 1] % Zeichen
-c = mod (a * G,  2) % Kodiertes Zeiche
-w = c; w(3) = 0 % Änderung um ein Fehler hinzuzufügen
+a = [1 0 1 1]; % Zeichen
+c = mod (a * G,  2); % Kodiertes Zeiche
+w = c; w(3) = 0; % Aenderung um ein Fehler hinzuzufuegen
 p = bin2dec(sprintf("%d",(mod(H * w', 2)')));
 
 if p~=0
@@ -165,12 +185,12 @@ G = [1, 1, 1, 1, 0, 0, 0, 0;
      1, 1, 1, 1, 1, 1, 1, 1];
     
 a = [1 0 1 1];
-c = mod (a * G,  2) % Kodiertes Zeiche
-w = c; w(4) = 1; % Änderung um ein Fehler hinzuzufügen
-fehler = mod(H * w', 2)'
+c = mod (a * G,  2); % Kodiertes Zeiche
+w = c; w(4) = 1; % Aenderung um ein Fehler hinzuzufuegen
+fehler = mod(H * w', 2)';
 p = bin2dec(sprintf("%d",fehler(1:3)));
 
-% Fehler Erkennung und korrektur für einfachen möglich
+% Fehler Erkennung und korrektur fuer einfachen moeglich
 % Zweifacher Fehler kann erkannt werden, aber nicht korrigiert werden
 if (p ~= 0 && fehler(4) == 1)
   printf("(Einfacher Fehler) An der %d. Stelle von W ist ein Fehler aufgetreten!\n\n", p+1);
@@ -182,7 +202,6 @@ endif
 
 
 disp('c) Zyklisch Einfach Fehler Erkennung')
-disp('')
 clear;
 
 # gegeben 
@@ -192,7 +211,7 @@ n = 7;
 k = n-m;
 
 pz = [1 0 1 1];  % x^3+x+1 - keine Nullstellen 0 oder 1
-mz = [1 0 0 1];  % x^3+1 - gehört zu a
+mz = [1 0 0 1];  % x^3+1 - gehuert zu a
 zk = [1 0 0 0];  % z^3 
 
 mz = conv(zk, mz);
@@ -203,7 +222,6 @@ cz(3) = 1; %Fehler erstellen!
 % sollte kein Rest ergeben, wenn doch 
 % dann Fehler enthalten!
 [ignore, FehlerRest] = deconv(cz, pz);
-FehlerRest
 
 for i = 1:length(FehlerRest)
   if(FehlerRest(i) ~= 0)
