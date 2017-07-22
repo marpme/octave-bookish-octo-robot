@@ -2,6 +2,11 @@ clear;
 clc;
 more off;
 
+##
+## Abgabe 8
+## Jan Kulose und Marvin Piekarek
+## s0557320 / s0556014
+##
 
 function [a, b] = linearReg(x,y)
   n = length(x);
